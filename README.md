@@ -194,7 +194,13 @@ add(1, '2');
 function add<T extends string>(x: T, y: T): T { return x + y }
 add(1, 2);
 add('1', '2')
+
+// <T extends {...}>
+// <T extends any[]>
+// <T extends (...args: any) => any>
+// <T extends abstract new (...args: any) => any>
 ```
+- class vs interface
 - 함수에서 공변성과 반공변성 주의!
 ```typescript
 function a(x: string): number {
@@ -243,6 +249,10 @@ try {
 } catch (err) {
   console.error(err.response?.data);
 }
+```
+- abstract class, abstract 생성자
+```typescript
+const constructor: abstract new (...args: any) => any = ...
 ```
 
 ## utility types로 알아보기
