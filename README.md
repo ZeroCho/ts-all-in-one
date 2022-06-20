@@ -74,12 +74,39 @@ try {
 const a: string = 'hello';
 const b: String = 'hell';
 ```
+- 템플릿 리터럴 타입이 존재(유니언 등 사용 가능)
+```typescript
+type World = "world";
+
+// type Greeting = "hello world"
+type Greeting = `hello ${World}`;
+```
 - typescript의 타입은 열려있음.
+```typescript
+```
 - 객제 타이핑: type과 interface 구분하기
 ```typescript
 ```
-- interface끼리는 서로 합쳐짐.
+- optional
+```typescript
+function abc(a: number, b?: number, c: number?) {}
+abc(1)
+abc(1, 2)
+abc(1, 2, 3)
 
+let obj: { a: string, b?: string }  = { a: 'hello', b: 'world' }
+obj = { a: 'hello' };
+```
+- interface끼리는 서로 합쳐짐.
+```typescript
+interface A { a: string }
+interface A { b: string }
+const obj1: A = { a: 'hello', b: 'world' }
+
+type B = { a: string }
+type B = { b: string }
+const obj2: B = { a: 'hello', b: 'world' }
+```
 - 제네릭은 타입에 대한 함수라고 생각하면 됨. 추론을 활용하기
 ```typescript
 function add<T>(x: T, y: T): T { return x + y }
@@ -91,13 +118,37 @@ add(1, '2');
 ```
 - 제네릭 기본값, extends
 ```typescript
+function add<T extends string>(x: T, y: T): T { return x + y }
+add(1, 2);
+add('1', '2')
 ```
 - 함수에서 공변성과 반공변성 주의!
 ```typescript
+function a(x: string): number {
+  return 0;
+}
+type B = (x: string) => number | string;
+let b: B = a;
+
+function a(x: string): number | string {
+  return 0;
+}
+type B = (x: string) => number;
+let b: B = a;
+
+function a(x: string | number): number {
+  return 0;
+}
+type B = (x: string) => number;
+let b: B = a;
+
+function a(x: string): number {
+  return 0;
+}
+type B = (x: string | number) => number;
+let b: B = a;
 ```
-- infer는 타입 내에서 추론된 값으로 다시 새로운 타입를 만드는 것.
-```typescript
-```
+- infer는 타입 내에서 추론된 값으로 다시 새로운 타입을 만드는 것(밑에 utility types 참고).
 
 ## utility types로 알아보기
 [링크](https://www.typescriptlang.org/docs/handbook/utility-types.html)
@@ -106,4 +157,97 @@ add(1, '2');
 type Partial<T> = {
     [P in keyof T]?: T[P];
 };
+```
+- Required
+```typescript
+type Required<T> = {
+    [P in keyof T]-?: T[P];
+};
+```
+- ReadOnly
+```typescript
+type Readonly<T> = {
+    readonly [P in keyof T]: T[P];
+};
+```
+- Pick
+```typescript
+type Pick<T, K extends keyof T> = {
+    [P in K]: T[P];
+};
+```
+- Record
+```typescript
+type Record<K extends keyof any, T> = {
+    [P in K]: T;
+};
+```
+- Exclude
+```typescript
+type Exclude<T, U> = T extends U ? never : T;
+```
+- Extract
+```typescript
+type Extract<T, U> = T extends U ? T : never;
+```
+- Omit
+```typescript
+type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+```
+- NonNullable
+```typescript
+type NonNullable<T> = T extends null | undefined ? never : T;
+```
+- Parameters
+```typescript
+type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
+```
+- ConstructorParameters
+```typescript
+type ConstructorParameters<T extends abstract new (...args: any) => any> = T extends abstract new (...args: infer P) => any ? P : never;
+```
+- ReturnType
+```typescript
+type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;
+```
+- InstanceType
+```typescript
+type InstanceType<T extends abstract new (...args: any) => any> = T extends abstract new (...args: any) => infer R ? R : any;
+```
+- 기타
+```typescript
+/**
+ * Convert string literal type to uppercase
+ */
+type Uppercase<S extends string> = intrinsic;
+
+/**
+ * Convert string literal type to lowercase
+ */
+type Lowercase<S extends string> = intrinsic;
+
+/**
+ * Convert first character of string literal type to uppercase
+ */
+type Capitalize<S extends string> = intrinsic;
+
+/**
+ * Convert first character of string literal type to lowercase
+ */
+type Uncapitalize<S extends string> = intrinsic;
+
+function applyStringMapping(symbol: Symbol, str: string) {
+    switch (intrinsicTypeKinds.get(symbol.escapedName as string)) {
+        case IntrinsicTypeKind.Uppercase: return str.toUpperCase();
+        case IntrinsicTypeKind.Lowercase: return str.toLowerCase();
+        case IntrinsicTypeKind.Capitalize: return str.charAt(0).toUpperCase() + str.slice(1);
+        case IntrinsicTypeKind.Uncapitalize: return str.charAt(0).toLowerCase() + str.slice(1);
+    }
+    return str;
+}
+
+/**
+ * Marker for contextual 'this' type
+ */
+interface ThisType<T> { }
 ```
