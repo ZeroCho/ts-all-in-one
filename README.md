@@ -2,6 +2,7 @@
 - [typescript 공식문서](https://www.typescriptlang.org/)
 - [typescript 플레이그라운드](https://www.typescriptlang.org/play)
 - [typescript 핸드북 필독](https://www.typescriptlang.org/docs/handbook/intro.html)
+- [typescript 버전 수정 내역](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html)
 
 ## 실습할 자료 링크(소스 코드 버전에 따라 변동 가능)
 - [axios](https://github.com/axios/axios/blob/v1.x/index.d.ts)
@@ -43,7 +44,7 @@ const b = '3';
 const c = a + b;
 function add(x: number, y: number) { return x + y }
 ```
-- : 뒷부분, as 뒷부분, <> 부분을 제외하면 자바스크립트와 동일. 제외하고 생각하는 연습을 초반에 해야 함.
+- : 뒷부분, as 뒷부분, <> 부분, interface, type, function 일부를 제외하면 자바스크립트와 동일. 제외하고 생각하는 연습을 초반에 해야 함.
 ```typescript
 const obj: { lat: number, lon: number } = { lat: 37.5, lon: 127.5 };
 const obj = { lat: 37.5, lon: 127.5 };
@@ -53,6 +54,9 @@ const a = document.querySelector('#root');
 
 function add<T>(x: T, y: T): T { return x + y }
 function add(x, y) { return x + y }
+
+interface A {};
+type A = {};
 ```
 - 자바스크립트에 비해서 자유도가 확 줄어듦(ex: 변수에 문자열을 넣었다가 숫자로 바꾸는 등의 행동 어려워짐)
 ```typescript
@@ -61,6 +65,7 @@ x = 'hello';
 ```
 - any를 최대한 쓰지 않는 것을 목표로 할 것.
 - never, unknown, any 타입 주의하기. any는 최대한 피하고 쓰더라도 나중에 꼭 제대로 타이핑하기.
+[never 좋은 설명 글](https://ui.toast.com/weekly-pick/ko_20220323)
 ```typescript
 try {
   const array = [];
@@ -81,12 +86,80 @@ type World = "world";
 // type Greeting = "hello world"
 type Greeting = `hello ${World}`;
 ```
-- typescript의 타입은 열려있음.
-```typescript
-```
 - 객제 타이핑: type과 interface 구분하기
 ```typescript
+type A = { a: string };
+const a: A = { a: 'hello' };
+
+interface B { a: string }
+const b: B = { a: 'hello' };
 ```
+- union, intersection
+```typescript
+function add(x: string | number, y: string | number): string | number { return x + y }
+add(1, 2)
+add('1', '2')
+add(1, '2')
+```
+- typescript의 타입은 열려있음.
+```typescript
+type A = {
+    a: string;
+}
+type B = {
+    b: string;
+}
+
+const aa: A | B = { a: 'hello', b: 'world' };
+const bb: A & B = { a: 'hello', b: 'world' };
+```
+- 타입 가드
+```typescript
+function numOrStr(a: number | string) {
+  if (typeof a === 'string') {
+    a.split(',');  
+  } else {
+    a.toFixed(1);
+  }
+}
+
+function numOrNumArr(a: number | number[]) {
+  if (Array.isArray(a)) {
+    a.slice(1);  
+  } else {
+    a.toFixed(1);
+  }
+}
+
+type B = { type: 'b', bbb: string };
+type C = { type: 'c', ccc: string };
+type D = { type: 'd', ddd: string };
+type A = B | C | D;
+function typeCheck(a: A) {
+  if (a.type === 'b') {
+    a.bbb;
+  } else if (a.type === 'c') {
+    a.ccc;
+  } else {
+    a.ddd;
+  }
+}
+
+interface Cat { meow: number }
+interface Dog { bow: number }
+function catOrDog(a: Cat | Dog): a is Dog {
+  if ((a as Cat).meow) { return false }
+  return true;
+}
+const cat: Cat | Dog = { meow: 3 }
+if (catOrDog(cat)) {
+    console.log(cat.meow);
+}
+if ('meow' in cat) {
+    console.log(cat.meow);
+}
+```
+class인 경우 instanceof 연산자도 가능!
 - optional
 ```typescript
 function abc(a: number, b?: number, c: number?) {}
@@ -148,7 +221,29 @@ function a(x: string): number {
 type B = (x: string | number) => number;
 let b: B = a;
 ```
+- 함수 오버로딩
+```typescript
+function add(x: number, y: number): number
+function add(x: string, y: string): string
+function add(x: number | string, y: number | string) {
+  return x + y;
+}
+
+interface Add {
+  (x: number, y: number): number;
+  (x: string, y: string): string;
+}
+const add: Add = (x, y) => x + y;
+```
 - infer는 타입 내에서 추론된 값으로 다시 새로운 타입을 만드는 것(밑에 utility types 참고).
+- 타입스크립트는 건망증이 심하다
+```typescript
+try {
+  await axios.get();
+} catch (err) {
+  console.error(err.response?.data);
+}
+```
 
 ## utility types로 알아보기
 [링크](https://www.typescriptlang.org/docs/handbook/utility-types.html)
