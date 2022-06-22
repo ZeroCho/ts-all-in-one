@@ -158,6 +158,12 @@ if (catOrDog(cat)) {
 if ('meow' in cat) {
     console.log(cat.meow);
 }
+
+const isRejected = (input: PromiseSettledResult<unknown>): input is PromiseRejectedResult => input.status === 'rejected';
+const isFulfilled = <T>(input: PromiseSettledResult<T>): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
+
+const promises = await Promise.allSettled([Promise.resolve('a'), Promise.resolve('b')]);
+const errors = promises.filter(isRejected);
 ```
 class인 경우 instanceof 연산자도 가능!
 - optional
@@ -356,3 +362,6 @@ function applyStringMapping(symbol: Symbol, str: string) {
  */
 interface ThisType<T> { }
 ```
+
+## Node와 Express의 타이핑
+
