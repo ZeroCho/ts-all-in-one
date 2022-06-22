@@ -74,6 +74,16 @@ try {
   error;
 }
 ```
+- 최대한 ! 대신 if를 쓸 것
+```typescript
+const head = document.querySelector('#head')!;
+console.log(head);
+
+const head = document.querySelector('#head');
+if (head) {
+  console.log(head);
+}
+```
 - string과 String은 다름. 소문자로 하는 것 기억하기.
 ```typescript
 const a: string = 'hello';
@@ -362,6 +372,81 @@ function applyStringMapping(symbol: Symbol, str: string) {
  */
 interface ThisType<T> { }
 ```
+
+## redux의 타이핑
+
+
+## react의 타이핑
+export = React; declare namespace React, declare global, namespace JSX
+```typesript
+import React = require('react');
+import * as React from 'react';
+React.useEffect
+```
+return에 무엇이 들어갈 수 있을까? JSX, string, null?
+```typesript
+function App(): JSX.Element {
+  ...
+}
+
+const App: FC<{}> = () => <div />;
+
+interface Element extends React.ReactElement<any, any> { }
+
+interface ReactElement<P = any, T extends string | JSXElementConstructor<any> = string | JSXElementConstructor<any>> {
+    type: T;
+    props: P;
+    key: Key | null;
+}
+
+type JSXElementConstructor<P> =
+        | ((props: P) => ReactElement<any, any> | null)
+        | (new (props: P) => Component<any, any>);
+      
+class Component<P, S> {
+  render(): ReactNode;
+}
+
+interface FunctionComponent<P = {}> {
+    (props: PropsWithChildren<P>, context?: any): ReactElement<any, any> | null;
+    propTypes?: WeakValidationMap<P> | undefined;
+    contextTypes?: ValidationMap<any> | undefined;
+    defaultProps?: Partial<P> | undefined;
+    displayName?: string | undefined;
+}
+
+type ReactText = string | number;
+type ReactChild = ReactElement | ReactText;
+type ReactFragment = {} | Iterable<ReactNode>;
+type ReactNode = ReactChild | ReactFragment | ReactPortal | boolean | null | undefined;
+interface ReactPortal extends ReactElement {
+    key: Key | null;
+    children: ReactNode;
+}
+
+type FC<P = {}> = FunctionComponent<P>;
+
+interface FunctionComponent<P = {}> {
+    (props: PropsWithChildren<P>, context?: any): ReactElement<any, any> | null;
+    propTypes?: WeakValidationMap<P> | undefined;
+    contextTypes?: ValidationMap<any> | undefined;
+    defaultProps?: Partial<P> | undefined;
+    displayName?: string | undefined;
+}
+
+type VFC<P = {}> = VoidFunctionComponent<P>;
+
+interface VoidFunctionComponent<P = {}> {
+    (props: P, context?: any): ReactElement<any, any> | null;
+    propTypes?: WeakValidationMap<P> | undefined;
+    contextTypes?: ValidationMap<any> | undefined;
+    defaultProps?: Partial<P> | undefined;
+    displayName?: string | undefined;
+}
+```
+
+## axios의 타이핑
+index.d.ts
 
 ## Node와 Express의 타이핑
 <reference path="..."은 해당 파일의 타입들을 끌고 오는 것. 요즘 할 필요 없음
