@@ -364,4 +364,5 @@ interface ThisType<T> { }
 ```
 
 ## Node와 Express의 타이핑
-
+<reference path="..."은 해당 파일의 타입들을 끌고 오는 것. 요즘 할 필요 없음
+d.ts 파일에 declare module 'fs:promises'로 import 'fs:promises' 할 때 어떤 타입이 될 지 작성할 수 있음.
