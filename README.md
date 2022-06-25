@@ -448,13 +448,13 @@ export function createDispatchHook<
 
 ## react의 타이핑
 export = React; declare namespace React, declare global, namespace JSX
-```typesript
+```typescript
 import React = require('react');
 import * as React from 'react';
 React.useEffect
 ```
 return에 무엇이 들어갈 수 있을까? JSX, string, null?
-```typesript
+```typescript
 function App(): JSX.Element {
   ...
 }
@@ -513,6 +513,35 @@ interface VoidFunctionComponent<P = {}> {
     defaultProps?: Partial<P> | undefined;
     displayName?: string | undefined;
 }
+```
+훅 타이핑
+```typescript
+function useState<S>(initialState: S | (() => S)): [S, Dispatch<SetStateAction<S>>];
+function useState<S = undefined>(): [S | undefined, Dispatch<SetStateAction<S | undefined>>];
+
+type SetStateAction<S> = S | ((prevState: S) => S);
+type Dispatch<A> = (value: A) => void;
+
+function useRef<T>(initialValue: T): MutableRefObject<T>;
+function useRef<T>(initialValue: T|null): RefObject<T>;
+function useRef<T = undefined>(): MutableRefObject<T | undefined>;
+
+interface MutableRefObject<T> {
+    current: T;
+}
+interface RefObject<T> {
+    readonly current: T | null;
+}
+
+function useLayoutEffect(effect: EffectCallback, deps?: DependencyList): void;
+function useEffect(effect: EffectCallback, deps?: DependencyList): void;
+
+type EffectCallback = () => (void | Destructor);
+type DependencyList = ReadonlyArray<unknown>;
+type Destructor = () => void | { [UNDEFINED_VOID_ONLY]: never };
+
+function useCallback<T extends Function>(callback: T, deps: DependencyList): T;
+function useMemo<T>(factory: () => T, deps: DependencyList | undefined): T;
 ```
 
 ## axios의 타이핑
