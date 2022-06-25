@@ -374,7 +374,77 @@ interface ThisType<T> { }
 ```
 
 ## redux의 타이핑
+```typescript
+export interface Dispatch<A extends Action = AnyAction> {
+  <T extends A>(action: T, ...extraArgs: any[]): T
+}
 
+export interface Action<T = any> {
+  type: T
+}
+
+export interface AnyAction extends Action {
+  // Allows any extra properties to be defined in an action.
+  [extraProps: string]: any
+}
+
+export interface ActionCreator<A, P extends any[] = any[]> {
+  (...args: P): A
+}
+
+export type Reducer<S = any, A extends Action = AnyAction> = (
+  state: S | undefined,
+  action: A
+) => S
+
+export interface MiddlewareAPI<D extends Dispatch = Dispatch, S = any> {
+  dispatch: D
+  getState(): S
+}
+
+export interface Middleware<
+  _DispatchExt = {}, // TODO: remove unused component (breaking change)
+  S = any,
+  D extends Dispatch = Dispatch
+> {
+  (api: MiddlewareAPI<D, S>): (
+    next: D
+  ) => (action: D extends Dispatch<infer A> ? A : never) => any
+}
+```
+
+## react-redux의 타이핑
+```typescript
+export const useSelector = /*#__PURE__*/ createSelectorHook()
+
+export function createSelectorHook(
+  context = ReactReduxContext
+): <TState = unknown, Selected = unknown>(
+  selector: (state: TState) => Selected,
+  equalityFn?: EqualityFn<Selected>
+) => Selected {
+}
+
+export const useDispatch = /*#__PURE__*/ createDispatchHook()
+
+export function createDispatchHook<
+  S = unknown,
+  A extends Action = AnyAction
+  // @ts-ignore
+>(context?: Context<ReactReduxContextValue<S, A>> = ReactReduxContext) {
+  const useStore =
+    // @ts-ignore
+    context === ReactReduxContext ? useDefaultStore : createStoreHook(context)
+
+  return function useDispatch<
+    AppDispatch extends Dispatch<A> = Dispatch<A>
+  >(): AppDispatch {
+    const store = useStore()
+    // @ts-ignore
+    return store.dispatch
+  }
+}
+```
 
 ## react의 타이핑
 export = React; declare namespace React, declare global, namespace JSX
@@ -447,6 +517,67 @@ interface VoidFunctionComponent<P = {}> {
 
 ## axios의 타이핑
 index.d.ts
+
+```typescript
+declare const axios: AxiosStatic;
+export default axios;
+
+export interface AxiosStatic extends AxiosInstance {
+  create(config?: CreateAxiosDefaults): AxiosInstance;
+  Cancel: CancelStatic;
+  CancelToken: CancelTokenStatic;
+  Axios: typeof Axios;
+  AxiosError: typeof AxiosError;
+  readonly VERSION: string;
+  isCancel(value: any): value is Cancel;
+  all<T>(values: Array<T | Promise<T>>): Promise<T[]>;
+  spread<T, R>(callback: (...args: T[]) => R): (array: T[]) => R;
+  isAxiosError<T = any, D = any>(payload: any): payload is AxiosError<T, D>;
+  toFormData(sourceObj: object, targetFormData?: GenericFormData, options?: FormSerializerOptions): GenericFormData;
+  formToJSON(form: GenericFormData|GenericHTMLFormElement): object;
+}
+
+export interface AxiosInstance extends Axios {
+  <T = any, R = AxiosResponse<T>, D = any>(config: AxiosRequestConfig<D>): AxiosPromise<R>;
+  <T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): AxiosPromise<R>;
+
+  defaults: Omit<AxiosDefaults, 'headers'> & {
+    headers: HeadersDefaults & {
+      [key: string]: AxiosHeaderValue
+    }
+  };
+}
+
+export class Axios {
+  constructor(config?: AxiosRequestConfig);
+  defaults: AxiosDefaults;
+  interceptors: {
+    request: AxiosInterceptorManager<AxiosRequestConfig>;
+    response: AxiosInterceptorManager<AxiosResponse>;
+  };
+  getUri(config?: AxiosRequestConfig): string;
+  request<T = any, R = AxiosResponse<T>, D = any>(config: AxiosRequestConfig<D>): Promise<R>;
+  get<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
+  delete<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
+  head<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
+  options<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
+  post<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  put<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  patch<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  postForm<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  putForm<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+  patchForm<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R>;
+}
+
+export interface AxiosResponse<T = any, D = any>  {
+  data: T;
+  status: number;
+  statusText: string;
+  headers: RawAxiosResponseHeaders | AxiosResponseHeaders;
+  config: AxiosRequestConfig<D>;
+  request?: any;
+}
+```
 
 ## Node와 Express의 타이핑
 <reference path="..."은 해당 파일의 타입들을 끌고 오는 것. 요즘 할 필요 없음
