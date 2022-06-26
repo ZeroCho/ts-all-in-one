@@ -608,6 +608,157 @@ export interface AxiosResponse<T = any, D = any>  {
 }
 ```
 
-## Node와 Express의 타이핑
+## Node의 타이핑
 <reference path="..."은 해당 파일의 타입들을 끌고 오는 것. 요즘 할 필요 없음
 d.ts 파일에 declare module 'fs:promises'로 import 'fs:promises' 할 때 어떤 타입이 될 지 작성할 수 있음.
+
+```typescript
+function createServer(requestListener?: RequestListener): Server;
+type RequestListener = (req: IncomingMessage, res: ServerResponse) => void;
+```
+
+## Express의 타이핑
+```typescript
+export = e;
+declare function e(): core.Express;
+declare namespace e {
+    var json: typeof bodyParser.json;
+    var urlencoded: typeof bodyParser.urlencoded;
+}
+  
+interface RequestHandler<
+    P = core.ParamsDictionary,
+    ResBody = any,
+    ReqBody = any,
+    ReqQuery = core.Query,
+    Locals extends Record<string, any> = Record<string, any>
+> extends core.RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals> {}
+
+import * as core from 'express-serve-static-core';
+```
+타입 확장을 위한 장치
+```typescript
+// This extracts the core definitions from express to prevent a circular dependency between express and serve-static
+declare global {
+    namespace Express {
+        // These open interfaces may be extended in an application-specific manner via declaration merging.
+        // See for example method-override.d.ts (https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/method-override/index.d.ts)
+        interface Request {}
+        interface Response {}
+        interface Application {}
+    }
+}
+  
+export interface Request<
+    P = ParamsDictionary,
+    ResBody = any,
+    ReqBody = any,
+    ReqQuery = ParsedQs,
+    Locals extends Record<string, any> = Record<string, any>
+> extends http.IncomingMessage,
+        Express.Request {}
+
+import { ParsedQs } from 'qs';
+
+export {};
+
+export type Query = ParsedQs;
+
+export interface ParamsDictionary {
+    [key: string]: string;
+}
+export interface RequestHandler<
+    P = ParamsDictionary,
+    ResBody = any,
+    ReqBody = any,
+    ReqQuery = ParsedQs,
+    Locals extends Record<string, any> = Record<string, any>
+> {
+    // tslint:disable-next-line callable-types (This is extended from and can't extend from a type alias in ts<2.2)
+    (
+        req: Request<P, ResBody, ReqBody, ReqQuery, Locals>,
+        res: Response<ResBody, Locals>,
+        next: NextFunction,
+    ): void;
+}
+  
+export interface NextFunction {
+    (err?: any): void;
+    /**
+     * "Break-out" of a router by calling {next('router')};
+     * @see {https://expressjs.com/en/guide/using-middleware.html#middleware.router}
+     */
+    (deferToNext: 'router'): void;
+    /**
+     * "Break-out" of a route by calling {next('route')};
+     * @see {https://expressjs.com/en/guide/using-middleware.html#middleware.application}
+     */
+    (deferToNext: 'route'): void;
+}
+
+export interface Express extends Application {
+    request: Request;
+    response: Response;
+}
+  
+export interface Application<
+    Locals extends Record<string, any> = Record<string, any>
+> extends EventEmitter, IRouter, Express.Application {
+  use: ApplicationRequestHandler<this>;
+}
+  
+export type ApplicationRequestHandler<T> = IRouterHandler<T> &
+    IRouterMatcher<T> &
+    ((...handlers: RequestHandlerParams[]) => T);
+  
+export type RequestHandlerParams<
+    P = ParamsDictionary,
+    ResBody = any,
+    ReqBody = any,
+    ReqQuery = ParsedQs,
+    Locals extends Record<string, any> = Record<string, any>
+> =
+    | RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals>
+    | ErrorRequestHandler<P, ResBody, ReqBody, ReqQuery, Locals>
+    | Array<RequestHandler<P> | ErrorRequestHandler<P>>;
+  
+
+```
+passport 타이핑
+```typescript
+declare global {
+    namespace Express {
+        // tslint:disable-next-line:no-empty-interface
+        interface AuthInfo {}
+        // tslint:disable-next-line:no-empty-interface
+        interface User {}
+
+        interface Request {
+            authInfo?: AuthInfo | undefined;
+            user?: User | undefined;
+
+            // These declarations are merged into express's Request type
+            login(user: User, done: (err: any) => void): void;
+            login(user: User, options: any, done: (err: any) => void): void;
+            logIn(user: User, done: (err: any) => void): void;
+            logIn(user: User, options: any, done: (err: any) => void): void;
+
+            logout(options: { keepSessionInfo?: boolean }, done: (err: any) => void): void;
+            logout(done: (err: any) => void): void;
+            logOut(options: { keepSessionInfo?: boolean }, done: (err: any) => void): void;
+            logOut(done: (err: any) => void): void;
+
+            isAuthenticated(): this is AuthenticatedRequest;
+            isUnauthenticated(): this is UnauthenticatedRequest;
+        }
+
+        interface AuthenticatedRequest extends Request {
+            user: User;
+        }
+
+        interface UnauthenticatedRequest extends Request {
+            user?: undefined;
+        }
+    }
+}
+```
