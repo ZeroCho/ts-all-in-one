@@ -176,6 +176,34 @@ const promises = await Promise.allSettled([Promise.resolve('a'), Promise.resolve
 const errors = promises.filter(isRejected);
 ```
 class인 경우 instanceof 연산자도 가능!
+- readonly
+```typescript
+interface A {
+  readonly a: string;
+  b: string;
+}
+```
+- class에 private, protected 추가됨
+```typescript
+class B implements A {
+  private a: string;
+  protected b: string;
+}
+class C extends B {}
+new C().a;
+new C().b;
+```
+- abstract class, abstract method
+```typescript
+abstract class X {
+  abstract work(user: User): boolean;
+}
+class Y extends X {
+  work(user: User): boolean {
+    return true;
+  }
+}
+```
 - optional
 ```typescript
 function abc(a: number, b?: number, c: number?) {}
@@ -217,6 +245,7 @@ add('1', '2')
 // <T extends abstract new (...args: any) => any>
 ```
 - class vs interface
+런타임에서 있냐 없냐.
 - 함수에서 공변성과 반공변성 주의!
 ```typescript
 function a(x: string): number {
