@@ -96,6 +96,50 @@ type World = "world";
 // type Greeting = "hello world"
 type Greeting = `hello ${World}`;
 ```
+- 배열, 튜플 문법
+```typescript
+let arr: string[] = [];
+let arr2: Array<string> = [];
+function rest(...args: string[]) {}
+
+const tuple: [string, number] = ['1', 1];
+tuple[2] = 'hello';
+tuple.push('hello');
+```
+- enum
+```typescript
+const enum EDirection {
+  Up,
+  Down,
+  Left,
+  Right,
+}
+ 
+const ODirection = {
+  Up: 0,
+  Down: 1,
+  Left: 2,
+  Right: 3,
+} as const;
+ 
+EDirection.Up;
+           
+(enum member) EDirection.Up = 0
+ 
+ODirection.Up;
+           
+(property) Up: 0
+ 
+// Using the enum as a parameter
+function walk(dir: EDirection) {}
+ 
+// It requires an extra line to pull out the keys
+type Direction = typeof ODirection[keyof typeof ODirection];
+function run(dir: Direction) {}
+ 
+walk(EDirection.Left);
+run(ODirection.Right);
+```
 - 객제 타이핑: type과 interface 구분하기
 ```typescript
 type A = { a: string };
@@ -638,12 +682,23 @@ export interface AxiosResponse<T = any, D = any>  {
 ```
 
 ## Node의 타이핑
+
 <reference path="..."은 해당 파일의 타입들을 끌고 오는 것. 요즘 할 필요 없음
 d.ts 파일에 declare module 'fs:promises'로 import 'fs:promises' 할 때 어떤 타입이 될 지 작성할 수 있음.
 
 ```typescript
 function createServer(requestListener?: RequestListener): Server;
 type RequestListener = (req: IncomingMessage, res: ServerResponse) => void;
+```
+  
+```typescript
+function readFile(path: PathLike | number, options: { encoding?: null; flag?: string; } | undefined | null, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void): void;
+
+function readFile(path: PathLike | FileHandle, options?: { encoding?: null, flag?: string | number } | null): Promise<Buffer>;
+  
+type PathLike = string | Buffer | URL;
+
+function join(...paths: string[]): string;
 ```
 
 ## Express의 타이핑
