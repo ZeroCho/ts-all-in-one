@@ -551,7 +551,8 @@ class Component<P, S> {
 }
 
 interface FunctionComponent<P = {}> {
-    (props: PropsWithChildren<P>, context?: any): ReactElement<any, any> | null;
+//    (props: PropsWithChildren<P>, context?: any): ReactElement<any, any> | null; // React17
+    (props: P, context?: any): ReactElement<any, any> | null;
     propTypes?: WeakValidationMap<P> | undefined;
     contextTypes?: ValidationMap<any> | undefined;
     defaultProps?: Partial<P> | undefined;
