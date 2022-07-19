@@ -158,6 +158,7 @@ type B = {
 
 const aa: A | B = { a: 'hello', b: 'world' };
 const bb: A & B = { a: 'hello', b: 'world' };
+
 ```
 - interface끼리는 서로 합쳐짐.
 ```typescript
@@ -168,6 +169,15 @@ const obj1: A = { a: 'hello', b: 'world' }
 type B = { a: string }
 type B = { b: string }
 const obj2: B = { a: 'hello', b: 'world' }
+```
+
+- 객체 리터럴은 검사는 따로 있음.
+```typescript
+type A = { hello: string };
+const a: A = { hello: 'world', why: 'error' };
+
+const b = { hello: 'world', why: 'error' };
+const c: A = b;
 ```
 
 - void 타입은 return값을 사용하지 안 겠다는 뜻(메서드나 매개변수에서는 리턴값 사용 가능)
