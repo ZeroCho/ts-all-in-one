@@ -85,7 +85,7 @@ const b: String = 'hell';
 ```
 - 템플릿 리터럴 타입이 존재(유니언 등 사용 가능)
 ```typescript
-type World = "world";
+type World = "world" | "hell";
 
 // type Greeting = "hello world"
 type Greeting = `hello ${World}`;
@@ -171,7 +171,7 @@ type B = { b: string }
 const obj2: B = { a: 'hello', b: 'world' }
 ```
 
-- 객체 리터럴은 검사는 따로 있음.
+- 객체 리터럴은 잉여 속성 검사가 있음.
 ```typescript
 type A = { hello: string };
 const a: A = { hello: 'world', why: 'error' };
@@ -308,7 +308,7 @@ add('1', '2')
 // <T extends {...}>
 // <T extends any[]>
 // <T extends (...args: any) => any>
-// <T extends abstract new (...args: any) => any>
+// <T extends abstract new (...args: any) => any> // 생성자 타입
 ```
 - class vs interface
 런타임에서 있냐 없냐.
