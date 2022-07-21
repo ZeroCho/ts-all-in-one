@@ -1,0 +1,28 @@
+{
+  "name": "ts-all-in-one",
+  "version": "1.0.0",
+  "description": "- [typescript 공식문서](https://www.typescriptlang.org/) - [typescript 플레이그라운드](https://www.typescriptlang.org/play) - [typescript 핸드북 필독](https://www.typescriptlang.org/docs/handbook/intro.html) - [typescript 버전 수정 내역](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZeroCho/ts-all-in-one.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZeroCho/ts-all-in-one/issues"
+  },
+  "homepage": "https://github.com/ZeroCho/ts-all-in-one#readme",
+  "dependencies": {
+    "redux": "^4.2.0",
+    "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.14",
+    "@types/node": "^18.0.6"
+  }
+}
