@@ -279,6 +279,14 @@ class Y extends X {
   }
 }
 ```
+- abstract class, abstract 생성자
+```typescript
+const constructor: abstract new (...args: any) => any = ...
+```
+- class vs interface
+
+런타임에서 있냐 없냐.
+
 - optional
 ```typescript
 function abc(a: number, b?: number, c: number?) {}
@@ -305,13 +313,12 @@ function add<T extends string>(x: T, y: T): T { return x + y }
 add(1, 2);
 add('1', '2')
 
-// <T extends {...}>
-// <T extends any[]>
-// <T extends (...args: any) => any>
+// <T extends {...}> // 특정 객체
+// <T extends any[]> // 모든 배열
+// <T extends (...args: any) => any> // 모든 함수
 // <T extends abstract new (...args: any) => any> // 생성자 타입
+// <T extends keyof any> // string | number | symbol
 ```
-- class vs interface
-런타임에서 있냐 없냐.
 - 함수에서 공변성과 반공변성 주의!
 ```typescript
 function a(x: string): number {
@@ -342,7 +349,7 @@ let b: B = a;
 ```typescript
 function add(x: number, y: number): number
 function add(x: string, y: string): string
-function add(x: number | string, y: number | string) {
+function add(x: any, y: any) {
   return x + y;
 }
 
@@ -350,7 +357,7 @@ interface Add {
   (x: number, y: number): number;
   (x: string, y: string): string;
 }
-const add: Add = (x, y) => x + y;
+const add: Add = (x: any, y: any) => x + y;
 ```
 - infer는 타입 내에서 추론된 값으로 다시 새로운 타입을 만드는 것(밑에 utility types 참고).
 - 타입스크립트는 건망증이 심하다
@@ -360,10 +367,6 @@ try {
 } catch (err) {
   console.error(err.response?.data);
 }
-```
-- abstract class, abstract 생성자
-```typescript
-const constructor: abstract new (...args: any) => any = ...
 ```
 
 ## utility types로 알아보기
@@ -468,7 +471,51 @@ function applyStringMapping(symbol: Symbol, str: string) {
 interface ThisType<T> { }
 ```
 
+# ts 라이브러리 분석
+- package.json의 types 속성에 적힌 파일이 메인 타이핑 파일임.
+- npmjs.com에서 패키지를 검색했을 때 패키지 우측에 TS로 뜨면 ts 지원 라이브러리이고, DT로 뜨면 @types를 설치해야 하며, 그것마저도 없으면 직접 타이핑해야 함
+- 첫 번째 줄부터 보기 보다는 마지막 줄 exports default나 export = 부분을 보고 거슬러 올라가는 게 좋음
+- 제네릭이 제일 읽기 어려워서 제네릭 부분은 따로 필기하면서 보는게 좋음
+
+## jQuery의 타이핑
+```typescript
+$( "p" ).removeClass( "myClass noClass" ).addClass( "yourClass" );
+$(["p", "t"]).text("hello");
+const tag = $( "ul li" ).addClass(function( index ) {
+  return "item-" + index;
+});
+$(tag).html(function (i: number) {
+  console.log(this);
+  return $(this).data('name') + '입니다';
+});
+```
+
+```typescript
+export = jQuery;
+
+declare const jQuery: JQueryStatic;
+declare const $: JQueryStatic;
+
+interface JQueryStatic {
+  <TElement extends HTMLElement = HTMLElement>(html: JQuery.htmlString, ownerDocument_attributes?: Document | JQuery.PlainObject): JQuery<TElement>;
+  <TElement extends Element = HTMLElement>(selector: JQuery.Selector, context?: Element | Document | JQuery | JQuery.Selector): JQuery<TElement>;
+}
+
+interface JQuery<TElement = HTMLElement> extends Iterable<TElement> {
+  addClass(className_function: JQuery.TypeOrArray<string> | ((this: TElement, index: number, currentClassName: string) => string)): this;
+  removeClass(className_function?: JQuery.TypeOrArray<string> | ((this: TElement, index: number, className: string) => string)): this;
+  on<TType extends string>(
+    events: TType,
+    handler: JQuery.TypeEventHandler<TElement, undefined, TElement, TElement, TType> | false
+  ): this;
+}
+```
+
 ## redux의 타이핑
+```typescript
+
+```
+
 ```typescript
 export interface Dispatch<A extends Action = AnyAction> {
   <T extends A>(action: T, ...extraArgs: any[]): T
@@ -507,12 +554,6 @@ export interface Middleware<
   ) => (action: D extends Dispatch<infer A> ? A : never) => any
 }
 ```
-
-# ts 라이브러리 분석
-- package.json의 types 속성에 적힌 파일이 메인 타이핑 파일임.
-- npmjs.com에서 패키지를 검색했을 때 패키지 우측에 TS로 뜨면 ts 지원 라이브러리이고, DT로 뜨면 @types를 설치해야 하며, 그것마저도 없으면 직접 타이핑해야 함
-- 첫 번째 줄부터 보기 보다는 마지막 줄 exports default나 export = 부분을 보고 거슬러 올라가는 게 좋음
-- 제네릭이 제일 읽기 어려워서 제네릭 부분은 따로 필기하면서 보는게 좋음
 
 ## react-redux의 타이핑
 ```typescript
