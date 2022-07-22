@@ -180,7 +180,7 @@ const b = { hello: 'world', why: 'error' };
 const c: A = b;
 ```
 
-- void 타입은 return값을 사용하지 안 겠다는 뜻(메서드나 매개변수에서는 리턴값 사용 가능)
+- void 타입은 return값을 사용하지 안 겠다는 뜻(메서드나 매개변수에서는 리턴값 사용 가능, but 조심해야 함)
 ```typescript
 declare function forEach<T>(arr: T[], callback: (el: T) => undefined): void;
 // declare function forEach<T>(arr: T[], callback: (el: T) => void): void;
@@ -193,6 +193,14 @@ interface A {
 const a: A = {
     talk() { return 3; }
 }
+```
+- 타입만 선언하고 싶을 때 declare(구현은 다른 파일에 있어야 함)
+```typescript
+declare const a: string;
+declare function a(x: number): number;
+declare class A {}
+
+// 추후 declare module, declare global, declare namespace도 배움
 ```
 
 - 타입간 대입 가능 표
