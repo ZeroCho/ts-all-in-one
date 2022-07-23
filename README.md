@@ -315,6 +315,14 @@ add<string>('1', '2');
 add('1', '2');
 add(1, '2');
 ```
+- 제네릭 선언 위치 기억하기
+```typescript
+function a<T>() {}
+class B<T>() {}
+interface C<T> {}
+type D<T> = {};
+const e = <T>() => {};
+```
 - 제네릭 기본값, extends
 ```typescript
 function add<T extends string>(x: T, y: T): T { return x + y }
