@@ -180,7 +180,7 @@ const b = { hello: 'world', why: 'error' };
 const c: A = b;
 ```
 
-- void 타입은 return값을 사용하지 안 겠다는 뜻(메서드나 매개변수에서는 리턴값 사용 가능)
+- void 타입은 return값을 사용하지 안 겠다는 뜻(메서드나 매개변수에서는 리턴값 사용 가능, but 조심해야 함)
 ```typescript
 declare function forEach<T>(arr: T[], callback: (el: T) => undefined): void;
 // declare function forEach<T>(arr: T[], callback: (el: T) => void): void;
@@ -193,6 +193,14 @@ interface A {
 const a: A = {
     talk() { return 3; }
 }
+```
+- 타입만 선언하고 싶을 때 declare(구현은 다른 파일에 있어야 함)
+```typescript
+declare const a: string;
+declare function a(x: number): number;
+declare class A {}
+
+// 추후 declare module, declare global, declare namespace도 배움
 ```
 
 - 타입간 대입 가능 표
@@ -306,6 +314,14 @@ add(1, 2);
 add<string>('1', '2');
 add('1', '2');
 add(1, '2');
+```
+- 제네릭 선언 위치 기억하기
+```typescript
+function a<T>() {}
+class B<T>() {}
+interface C<T> {}
+type D<T> = {};
+const e = <T>() => {};
 ```
 - 제네릭 기본값, extends
 ```typescript
@@ -685,6 +701,60 @@ type Destructor = () => void | { [UNDEFINED_VOID_ONLY]: never };
 
 function useCallback<T extends Function>(callback: T, deps: DependencyList): T;
 function useMemo<T>(factory: () => T, deps: DependencyList | undefined): T;
+```
+
+tsconfig.json "jsx": "react"로
+
+```typescript
+import * as React from 'react';
+import { useState, useCallback, useRef } from 'react';
+
+const WordRelay = () => {
+    const [word, setWord] = useState('제로초');
+    const [value, setValue] = useState('');
+    const [result, setResult] = useState('');
+    const inputEl = useRef(null);
+
+    const onSubmitForm = useCallback((e) => {
+        e.preventDefault();
+        const input = inputEl.current;
+        if (word[word.length - 1] === value[0]) {
+          setResult('딩동댕');
+          setWord(value);
+          setValue('');
+          if (input) {
+            input.focus();
+          }
+        } else {
+          setResult('땡');
+          setValue('');
+          if (input) {
+            input.focus();
+          }
+        }
+    }, [word, value]);
+
+    const onChange = useCallback((e) => {
+        setValue(e.currentTarget.value) 
+    }, []);
+
+    return (
+        <>
+          <div>{word}</div>
+          <form onSubmit={onSubmitForm}>
+            <input
+              ref={inputEl}
+              value={value}
+              onChange={onChange}
+            />
+            <button>입력!</button>
+          </form>
+          <div>{result}</div>
+        </>
+      );
+};
+
+export default WordRelay;
 ```
 
 ## axios의 타이핑
