@@ -5,7 +5,7 @@ const initialState = {
 
 const userReducer = (prevState = initialState, action) => { // 새로운 state 만들어주기
     switch (action.type) {
-        case 'LOG_IN':
+        case 'LOG_IN_SUCCESS':
             return {
                 ...prevState,
                 data: action.data,
