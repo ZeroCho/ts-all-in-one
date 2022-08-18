@@ -31,6 +31,10 @@ function add(x: number, y: number): number { return x + y }
 const add: (x: number, y: number) => number = (x, y) => x + y;
 const obj: { lat: number, lon: number } = { lat: 37.5, lon: 127.5 };
 ```
+- 특수한 타입 {} (null과 undefined가 아닌 모든 타입)
+```typescript
+const z: {} = 5;
+```
 - ts가 추론해주는 타입이 있는데 이런 건 그냥 그대로 사용하면 됨. ts가 추론하지 못하는 경우에만 직접 타이핑할 것.
 ```typescript
 const a = 5;
@@ -384,6 +388,12 @@ try {
   console.error(err.response?.data);
 }
 ```
+- this 타이핑
+```typescript
+function (this: Window, a: number, b: number) {
+  console.log(this);
+}
+```
 
 ## utility types로 알아보기
 [링크](https://www.typescriptlang.org/docs/handbook/utility-types.html)
@@ -492,6 +502,23 @@ interface ThisType<T> { }
 - npmjs.com에서 패키지를 검색했을 때 패키지 우측에 TS로 뜨면 ts 지원 라이브러리이고, DT로 뜨면 @types를 설치해야 하며, 그것마저도 없으면 직접 타이핑해야 함
 - 첫 번째 줄부터 보기 보다는 마지막 줄 exports default나 export = 부분을 보고 거슬러 올라가는 게 좋음
 - 제네릭이 제일 읽기 어려워서 제네릭 부분은 따로 필기하면서 보는게 좋음
+
+## 모듈 시스템
+```typescript
+export = A // commonjs
+import A = require('a') // commonjs
+
+export = A
+export as namespace A // UMD
+
+export default A // ESM
+import A from 'a'; // ESM
+```
+
+```typescript
+declare global {}
+export {} // export나 import 필요
+```
 
 ## jQuery의 타이핑
 ```typescript
