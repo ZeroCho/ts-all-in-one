@@ -66,7 +66,7 @@ x = 'hello';
 [never 좋은 설명 글](https://ui.toast.com/weekly-pick/ko_20220323)
 ```typescript
 try {
-  const array = [];
+  const array = []; // noImplicitAny가 false일 때
   array[0];
 } catch(error) {
   error;
@@ -1069,5 +1069,22 @@ declare class Strategy extends PassportStrategy {
     constructor(verify: VerifyFunction);
 
     name: string;
+}
+```
+
+### d.ts 사용하기
+- 그냥 일반 ts 파일에 타입 선언해도 됨
+- BUT, import한 것과 인터페이스 이름이 겹치면 에러 발생
+- 이럴 경우 d.ts로 분리(d.ts는 타입만 있고 구현은 없는 파일)
+- 우선 declare global, declare module, declare namespace 없이 타이핑하기
+- 확장하고 싶은 인터페이스가 저렇게 되어있다면 declare 추가
+- 한 번 declare 쓴 블럭 안에서는 추가적으로 declare 필요 없음
+
+## 직접 타이핑하기
+
+types/모듈명.d.ts (꼭 types 폴더 안에 있을 필요는 없음)
+```typescript
+declare module "모듈명" {
+  // import나 export 하나 필수
 }
 ```
