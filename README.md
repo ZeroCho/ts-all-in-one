@@ -138,7 +138,7 @@ function run(dir: Direction) {}
 walk(EDirection.Left);
 run(ODirection.Right);
 ```
-- 객제 타이핑: type과 interface 구분하기
+- 객체 타이핑: type과 interface 구분하기
 ```typescript
 type A = { a: string };
 const a: A = { a: 'hello' };
