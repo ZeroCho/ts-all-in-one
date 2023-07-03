@@ -505,8 +505,9 @@ interface ThisType<T> { }
 
 ## 모듈 시스템
 ### 모듈 vs 스크립트
-top level import/export가 있으면 모듈.
-다음은 export가 top level에 있지 않으므로 모듈 아님, 스크립트 파일임
+top level import/export가 있으면 모듈. 없으면 스크립트 파일
+- 스크립트 파일이면 전역적으로 접근 가능함
+- 다음은 export가 top level에 있지 않으므로 모듈 아님, 스크립트 파일임
 ```typescript
 declare module "hello" {
   export default class {}
@@ -514,17 +515,23 @@ declare module "hello" {
 ```
 ### 모듈 종류
 ```typescript
-export = A // commonjs
-import A = require('a') // commonjs
+// commonjs
+export = A // export 방식
+import A = require('a') // import(module = commonjs)
+import * as A from 'a'; // import(module = es2015, esModuleInterop = false)
+import A from 'a'; // import(module = es2015, esModuleInterop = true)
 
-export = A
-export as namespace A // UMD
+// UMD
+export = A // commonjs를 위해
+export as namespace A // 스크립트 파일을 위해, 스크립트 파일에서는 import 없이 namespace로 불러올 수 있음
 
-export default A // ESM
-import A from 'a'; // ESM
+// ESM, 표준, 권장 방식
+export default A;
+import A from 'a';
 
-export * from '모듈명' // 모듈로부터 모든 것을 임포트한 다음에 다시 export
-export * as namespace from '모듈명' // 모듈로부터 모든 것을 임포트한다음에 as에 적힌 namespace대로 export
+export * from '모듈명' // 모듈로부터 모든 것을 임포트한 다음에 다시 export, default 못 가져오고 commonjs 모듈도 못 가져옴
+export * as namespace from '모듈명' // 모듈로부터 모든 것을 임포트한다음에 as에 적힌 namespace대로 export(default 가져올 수 있음, commonjs 모듈 못 가져옴)
+import { namespace } from '모듈명'; namespace.default; // 이 방식으로 default 접근 가능
 ```
 ### declare global, declare module
 declare global는 모듈이어야 해서 top level import/export 필요
@@ -536,10 +543,10 @@ export {} // export나 import 필요
 ```
 스크립트 파일은 처음부터 전역이므로 declare global 없이 그냥 쓰면 됨
 ```typescript
-interface Error
+interface Error {}
 ```
 
-declare module을 스크립트 파일에 하면 기존 타입 선언 대체, 모듈 파일에 하면 기존 타입 선언과 병
+declare module을 스크립트 파일에 하면 기존 타입 선언 대체, 모듈 파일에 하면 기존 타입 선언과 병합됨.
 ```typescript
 declare module "express-session" {
   interface SessionData {
