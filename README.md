@@ -504,14 +504,15 @@ interface ThisType<T> { }
 - 제네릭이 제일 읽기 어려워서 제네릭 부분은 따로 필기하면서 보는게 좋음
 
 ## 모듈 시스템
+### 모듈 vs 스크립트
 top level import/export가 있으면 모듈.
-다음은 export가 top level에 있지 않으므로 모듈 아님
+다음은 export가 top level에 있지 않으므로 모듈 아님, 스크립트 파일임
 ```typescript
 declare module "hello" {
   export default class {}
 }
 ```
-
+### 모듈 종류
 ```typescript
 export = A // commonjs
 import A = require('a') // commonjs
@@ -525,7 +526,7 @@ import A from 'a'; // ESM
 export * from '모듈명' // 모듈로부터 모든 것을 임포트한 다음에 다시 export
 export * as namespace from '모듈명' // 모듈로부터 모든 것을 임포트한다음에 as에 적힌 namespace대로 export
 ```
-
+### declare global, declare module
 declare global는 모듈이어야 해서 top level import/export 필요
 ```typescript
 declare global {
@@ -537,8 +538,9 @@ export {} // export나 import 필요
 ```typescript
 interface Error
 ```
+
 declare module을 스크립트 파일에 하면 기존 타입 선언 대체, 모듈 파일에 하면 기존 타입 선언과 병
-```
+```typescript
 declare module "express-session" {
   interface SessionData {
     sessionData: string;
