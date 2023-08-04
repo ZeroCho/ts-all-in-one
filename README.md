@@ -4,6 +4,13 @@
 - [typescript 핸드북 필독](https://www.typescriptlang.org/docs/handbook/intro.html)
 - [typescript 버전 수정 내역](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html)
 
+## 타입스크립트 교과서
+Part1, Part2 강좌를 합쳐서 책으로 냈습니다.
+[링크](https://www.zerocho.com/book/3)
+![image](https://github.com/ZeroCho/ts-all-in-one/assets/10962668/7599d3a8-40c2-4a3c-8b39-6c06701c82d8)
+
+책 소스코드, 질의응답은 [책 전용 깃헙](https://github.com/zerocho/ts-book)에서 받습니다.
+
 ## 실습할 자료 링크(소스 코드 버전에 따라 변동 가능)
 - [axios](https://github.com/axios/axios/blob/v1.x/index.d.ts)
 - [react](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts)
