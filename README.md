@@ -4,6 +4,13 @@
 - [typescript 핸드북 필독](https://www.typescriptlang.org/docs/handbook/intro.html)
 - [typescript 버전 수정 내역](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html)
 
+## 타입스크립트 교과서
+Part1, Part2 강좌를 합쳐서 책으로 냈습니다.
+[링크](https://www.zerocho.com/book/3)
+![image](https://github.com/ZeroCho/ts-all-in-one/assets/10962668/7599d3a8-40c2-4a3c-8b39-6c06701c82d8)
+
+책 소스코드, 질의응답은 [책 전용 깃헙](https://github.com/zerocho/ts-book)에서 받습니다.
+
 ## 실습할 자료 링크(소스 코드 버전에 따라 변동 가능)
 - [axios](https://github.com/axios/axios/blob/v1.x/index.d.ts)
 - [react](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts)
@@ -504,20 +511,56 @@ interface ThisType<T> { }
 - 제네릭이 제일 읽기 어려워서 제네릭 부분은 따로 필기하면서 보는게 좋음
 
 ## 모듈 시스템
+### 모듈 vs 스크립트
+top level import/export가 있으면 모듈. 없으면 스크립트 파일
+- 스크립트 파일이면 전역적으로 접근 가능함
+- 다음은 export가 top level에 있지 않으므로 모듈 아님, 스크립트 파일임
 ```typescript
-export = A // commonjs
-import A = require('a') // commonjs
+declare module "hello" {
+  export default class {}
+}
+```
+### 모듈 종류
+```typescript
+// commonjs
+export = A // export 방식
+import A = require('a') // import(module = commonjs)
+import * as A from 'a'; // import(module = es2015, esModuleInterop = false)
+import A from 'a'; // import(module = es2015, esModuleInterop = true)
 
-export = A
-export as namespace A // UMD
+// UMD
+export = A // commonjs를 위해
+export as namespace A // 스크립트 파일을 위해, 스크립트 파일에서는 import 없이 namespace로 불러올 수 있음
 
-export default A // ESM
-import A from 'a'; // ESM
+// ESM, 표준, 권장 방식
+export default A;
+import A from 'a';
+
+export * from '모듈명' // 모듈로부터 모든 것을 임포트한 다음에 다시 export, default 못 가져오고 commonjs 모듈도 못 가져옴
+export * as namespace from '모듈명' // 모듈로부터 모든 것을 임포트한다음에 as에 적힌 namespace대로 export(default 가져올 수 있음, commonjs 모듈 못 가져옴)
+import { namespace } from '모듈명'; namespace.default; // 이 방식으로 default 접근 가능
+```
+### declare global, declare module
+declare global는 모듈이어야 해서 top level import/export 필요
+```typescript
+declare global {
+  interface Error {}
+}
+export {} // export나 import 필요
+```
+스크립트 파일은 처음부터 전역이므로 declare global 없이 그냥 쓰면 됨
+```typescript
+interface Error {}
 ```
 
+declare module을 스크립트 파일에 하면 기존 타입 선언 대체, 모듈 파일에 하면 기존 타입 선언과 병합됨.
 ```typescript
-declare global {}
-export {} // export나 import 필요
+declare module "express-session" {
+  interface SessionData {
+    sessionData: string;
+  }
+}
+export {} // 있냐 없냐가 모듈/스크립트 파일을 결정하므로 중요
 ```
 
 ## jQuery의 타이핑
