@@ -14,31 +14,31 @@ export const logIn = (data) => { // async action creator
   };
 };
 
-const logInRequest = (data) => {
+export const logInRequest = (data) => {
   return {
     type: 'LOG_IN_REQUEST',
     data,
-  }
+  } as const
 };
 
-const logInSuccess = (data) => {
+export const logInSuccess = (data) => {
   return {
     type: 'LOG_IN_SUCCESS',
     data,
-  }
+  } as const
 };
 
-const logInFailure = (error) => {
+export const logInFailure = (error: Error) => {
   return {
     type: 'LOG_IN_FAILURE',
     error,
-  }
+  } as const
 };
 
 export const logOut = () => {
   return { // action
     type: 'LOG_OUT',
-  };
+  } as const;
 };
 
 export default {

@@ -18,11 +18,12 @@
   },
   "homepage": "https://github.com/ZeroCho/ts-all-in-one#readme",
   "dependencies": {
+    "@types/react-redux": "^7.1.31",
     "axios": "^0.27.2",
     "express": "^4.18.1",
     "react": "^18.2.0",
     "redux": "^4.2.0",
-    "typescript": "^4.7.4"
+    "typescript": "5.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
